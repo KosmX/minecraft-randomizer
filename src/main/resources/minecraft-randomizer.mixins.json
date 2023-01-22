@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "dev.kosmx.randomizer.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ChunkInverter",
+    "ProtoChunkFixer",
+    "StructurePieceAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

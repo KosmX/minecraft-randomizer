@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "minecraft-randomizer",
+	"version": "${version}",
+	"name": "MInecraft randomizer",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "dev.kosmx.randomizer.RandomizerInit",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"minecraft-randomizer.mixins.json",
+		{
+			"config": "minecraft-randomizer.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.14.13",
+		"minecraft": "~1.19.3",
+		"java": ">=17",
+		"fabric-api": "*",
+		"fabric-language-kotlin": ">=1.8.0"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
