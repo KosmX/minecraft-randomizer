@@ -15,10 +15,7 @@ public class ChunkInverter {
 
     @Inject(method = "generateFeatures", at = @At(value = "TAIL"))
     private void test1(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor, CallbackInfo ci){
-        if(Inverter.INSTANCE.shouldInvertChunk(chunk.getPos())) {
-            Inverter.INSTANCE.invert(chunk, world);
-        }
-
+        Inverter.INSTANCE.invert(chunk, world);
     }
 
 

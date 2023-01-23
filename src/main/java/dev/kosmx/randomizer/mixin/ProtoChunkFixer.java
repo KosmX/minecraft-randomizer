@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -37,31 +38,47 @@ public abstract class ProtoChunkFixer extends Chunk {
 
     @Shadow public abstract HeightLimitView getHeightLimitView();
 
+    @Unique private BlockPos invertBlockPos(BlockPos pos) {
+        if(Inverter.INSTANCE.shouldInvertChunk(this.getPos()) && this.status.isAtLeast(ChunkStatus.FEATURES)){
+
+            int bottomY = getBottomY();
+            int topY = getTopY();
+
+
+            return new BlockPos(pos.getX(), topY + bottomY - pos.getY() -1, pos.getZ());
+        }
+        return pos;
+    }
+
     //@Shadow public abstract Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
 
     @Inject(method = "setBlockState", at = @At("HEAD"))
     private void setBlockFix(BlockPos pos, BlockState state, boolean moved, CallbackInfoReturnable<BlockState> cir){
         if(getBlockState(pos).getLuminance() > 0){
             var old = new BlockPos((pos.getX() & 15) + this.getPos().getStartX(), pos.getY(), (pos.getZ() & 15) + this.getPos().getStartZ());
-            this.lightSources.removeIf(blockPos -> blockPos.getX() == old.getX() && blockPos.getY() == old.getY() && blockPos.getZ() == old.getZ());
+            this.lightSources.removeIf(blockPos -> blockPos.equals(old));
         }
     }
 
     @ModifyVariable(method = "setBlockState", at = @At("HEAD"), argsOnly = true)
     private BlockPos modifyPos(BlockPos pos){
-        if(Inverter.INSTANCE.shouldInvertChunk(this.getPos()) && this.status.isAtLeast(ChunkStatus.FEATURES)){
+        return invertBlockPos(pos);
+    }
 
-            int bottomY = getBottomY();
-            int topY = getTopY();
 
-            //boolean isNether = getBiomeForNoiseGen(pos.getX(), pos.getY(), pos.getZ()).value().getCategory().equals(Biome.Category.NETHER);
-            //if(isNether) {
-            //    topY = 128;
-            //}
+    /*
+    @ModifyVariable(method = "setBlockEntity", at = @At("HEAD"), argsOnly = true)
+    private BlockEntity setBlockEntityFix(BlockEntity blockEntity) {
+        if (!Inverter.INSTANCE.shouldInvertChunk(getPos())) return blockEntity;
+        final var nbt = blockEntity.createNbtWithId();
+        final var pos = blockEntity.getPos();
 
-            return new BlockPos(pos.getX(), topY + bottomY - pos.getY() -1, pos.getZ());
-        }
-        return pos;
+        return BlockEntity.createFromNbt(invertBlockPos(pos), getBlockState(pos), nbt);
+    }*/
+
+    @ModifyVariable(method = "getBlockEntity", at = @At("HEAD"), argsOnly = true)
+    private BlockPos getBlockEntityFix(BlockPos pos) {
+        return invertBlockPos(pos);
     }
 
 }
