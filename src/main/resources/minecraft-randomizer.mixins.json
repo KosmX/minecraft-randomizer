@@ -3,9 +3,13 @@
   "package": "dev.kosmx.randomizer.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ChunkInverter",
-    "ProtoChunkFixer",
-    "StructurePieceAccessor"
+    "inverter.ChunkInverter",
+    "inverter.EndCrystalFeatureFixer",
+    "inverter.EntityMixin",
+    "inverter.LivingEntityMixin",
+    "inverter.ProtoChunkFixer",
+    "inverter.ServerPlayNetworkHandlerMixin",
+    "inverter.StructurePieceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

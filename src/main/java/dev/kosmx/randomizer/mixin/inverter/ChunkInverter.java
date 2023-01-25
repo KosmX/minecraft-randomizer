@@ -1,4 +1,4 @@
-package dev.kosmx.randomizer.mixin;
+package dev.kosmx.randomizer.mixin.inverter;
 
 import dev.kosmx.randomizer.inverter.Inverter;
 import net.minecraft.world.StructureWorldAccess;

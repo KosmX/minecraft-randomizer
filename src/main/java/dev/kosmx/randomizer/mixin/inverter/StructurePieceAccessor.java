@@ -1,4 +1,4 @@
-package dev.kosmx.randomizer.mixin;
+package dev.kosmx.randomizer.mixin.inverter;
 
 import net.minecraft.block.Block;
 import net.minecraft.structure.StructurePiece;

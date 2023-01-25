@@ -1,17 +1,22 @@
 package dev.kosmx.randomizer.inverter
 
-import dev.kosmx.randomizer.mixin.StructurePieceAccessor
+import dev.kosmx.randomizer.mixin.inverter.StructurePieceAccessor
 import kotlinx.serialization.Serializable
 import net.minecraft.block.Block
 import net.minecraft.block.entity.BlockEntity
+import net.minecraft.entity.Entity
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.chunk.Chunk
 import java.util.*
+import kotlin.math.min
 
 object Inverter {
-    private var config: InverterConfig = InverterConfig()
+    var config: InverterConfig = InverterConfig()
+        private set
 
     operator fun invoke(config: InverterConfig) {
         this.config = config
@@ -64,10 +69,37 @@ object Inverter {
         }
     }
 
+    /**
+     * Tick in void function
+     * @return true if needs cancelling
+     */
+    fun tickInVoid(entity: Entity): Boolean {
+        return if (config.looper) {
+            entity.velocity.let {
+                entity.teleport(entity.x, entity.world.topY + 64.0, entity.z)
+                entity.velocity = it // some stuff can't be fixed here
+            }
+            true
+        } else false
+    }
+
+    /**
+     *
+     */
+    fun computeFallDamage(entity: LivingEntity, fallDamage: Int): Int {
+        if (config.maxFallDamage >= 0 && (!config.fallLimitOnlyPlayer || entity is PlayerEntity)) {
+            return min(fallDamage, config.maxFallDamage)
+        }
+        return fallDamage
+    }
+
 }
 @Serializable
 data class InverterConfig(
     val enabled: Boolean = false,
     val modifySpawnMechanics: Boolean = false,
-    val invertPercentage: Float = 1f
+    val invertPercentage: Float = 1f,
+    val looper: Boolean = false, // loop back entities fallen out of the world
+    val fallLimitOnlyPlayer: Boolean = true,
+    val maxFallDamage: Int = -1, // Max allowed fall damage, negative is disabled
 )
